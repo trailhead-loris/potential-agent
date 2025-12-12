@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Benvenuto - Demo </title>
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #ffffff; margin: 0; }
+    .box { background: #fff; padding: 24px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left; width: 350px; }
+    h1 { margin: 0 0 20px; font-size: 24px; text-align: center; color: #333; }
+    .info-row { margin-bottom: 10px; font-size: 16px; color: #555; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+    .info-row strong { color: #000; display: inline-block; width: 100px; }
+    
+    a.button { display: block; text-align: center; margin-top: 20px; padding: 12px 14px; background: #0969da; color: #fff; border-radius: 6px; text-decoration: none; cursor: pointer; }
+    a.button:hover { background: #0758b7; }
+    a.button.disabled { background: #ccc; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Dati Utente</h1>
+    
+    <div class="info-row"><strong>name:</strong> <span id="disp-name"></span></div>
+    <div class="info-row"><strong>userType:</strong> <span id="disp-type"></span></div>
+    <div class="info-row"><strong>nationality:</strong> <span id="disp-nat"></span></div>
+    <div class="info-row"><strong>userId:</strong> <span id="disp-id"></span></div>
+
+    <a id="btn-open-chat" class="button disabled">Inizializzazione Chat...</a>
+    
+    <div style="margin-top: 20px; text-align: center;">
+        <button onclick="console.log('Logout cliccato (nessuna azione)')" style="background: none; border: none; color: #dc3545; cursor: pointer; text-decoration: underline; font-size: 14px;">
+            Logout
+        </button>
+    </div>
+  </div>
+
+  <script>
+    // Definiamo le variabili 
+    const name = "Mario Rossi";
+    const userType = "consultant";
+    const nationality = "IT";
+    const userId = "12345";
+
+    // Show Data
+    document.getElementById('disp-name').innerText = name;
+    document.getElementById('disp-type').innerText = userType;
+    document.getElementById('disp-nat').innerText = nationality;
+    document.getElementById('disp-id').innerText = userId;
+
+    // Gestione click bottone chat
+    const btnChat = document.getElementById('btn-open-chat');
+    btnChat.onclick = function() {
+        if (btnChat.classList.contains('disabled')) return;
+        console.log("Tentativo apertura chat manuale...");
+        // Utilizziamo l'API di utilità per aprire la chat
+        embeddedservice_bootstrap.utilAPI.launchChat()
+            .catch((e) => console.error("Errore apertura chat:", e));
+    };
+  </script>
+
+  <script type='text/javascript'>
+    function initEmbeddedMessaging() {
+        console.log("--> INIZIO INIT SALESFORCE (Nuovo Ambiente) <--");
+        try {
+            // --- SETTINGS ---
+            // definiamo la lingua del sito 
+            embeddedservice_bootstrap.settings.language = 'it'; 
+            // Disabilita input utente Mentre agente scrive se necessario
+            embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
+
+            // --- EVENT LISTENER 
+            window.addEventListener("onEmbeddedMessagingReady", () => {
+                console.log("2. EVENTO RICEVUTO: Messaging Ready!");
+                
+                try {
+                    // --- PASSAGGIO PARAMETRI HIDDEN ---
+                    // Qui passiamo le variabili definite 
+                    embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+                        "name": name,
+                        "userType": userType,
+                        "nationality": nationality,
+                        "userId": userId
+                    });
+                    
+                    console.log("3. Parametri Hidden impostati correttamente: ", { name, userType, nationality, userId });
+                } catch (e) {
+                    console.error("Errore nel settare i campi hidden:", e);
+                }
+
+                // Abilitiamo il bottone grafico
+                const btn = document.getElementById('btn-open-chat');
+                btn.innerText = "Parla con l'Agente";
+                btn.classList.remove('disabled');
+            });
+
+            // --- SNIPPET INIT ---
+            embeddedservice_bootstrap.init(
+                '00DUA000003hFV7',
+                'ai_chogangroupspa_com',
+                'https://chogangroup--devai2.sandbox.my.site.com/ESWaichogangroupspacom1764335835157',
+                {
+                    scrt2URL: 'https://chogangroup--devai2.sandbox.my.salesforce-scrt.com'
+                }
+            );
+
+        } catch (err) {
+            console.error('Error loading Embedded Messaging: ', err);
+        }
+    };
+  </script>
+  
+  <script type='text/javascript' src='https://chogangroup--devai2.sandbox.my.site.com/ESWaichogangroupspacom1764335835157/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+</body>
+</html>
