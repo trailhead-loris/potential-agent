@@ -18,7 +18,7 @@
   <div class="box">
     <h1>Dati Utente</h1>
     
-    <div class="info-row"><strong>name:</strong> <span id="disp-name">...</span></div>
+    <div class="info-row"><strong>fullname:</strong> <span id="disp-name">...</span></div>
     <div class="info-row"><strong>userType:</strong> <span id="disp-type">...</span></div>
     <div class="info-row"><strong>nationality:</strong> <span id="disp-nat">...</span></div>
     <div class="info-row"><strong>userId:</strong> <span id="disp-id">...</span></div>
@@ -35,40 +35,41 @@
         console.log("--> INIT SALESFORCE START <--");
 
         try {
-            // 1. DEFINIZIONE VARIABILI (Tutto dentro la funzione per sicurezza scope)
-            // Usiamo un oggetto per pulizia, ma puoi usare const separate
+            // 1. DEFINIZIONE VARIABILI
+            // 
             const userData = {
-                firstName: "Mario Rossi", // Ho cambiato nome var per evitare conflitti con window.name
+                fullname: "Mario Rossi", 
                 userType: "consultant",
                 nationality: "IT",
                 userId: "12345"
             };
 
-            // 2. AGGIORNAMENTO INTERFACCIA (Così vediamo cosa stiamo per inviare)
-            document.getElementById('disp-name').innerText = userData.firstName;
+            // 2. AGGIORNAMENTO INTERFACCIA Per vedere cosa stiamo per inviare all'agente )
+            document.getElementById('disp-name').innerText = userData.fullname;
             document.getElementById('disp-type').innerText = userData.userType;
             document.getElementById('disp-nat').innerText = userData.nationality;
             document.getElementById('disp-id').innerText = userData.userId;
 
             // --- IMPOSTAZIONI SALESFORCE ---
             embeddedservice_bootstrap.settings.language = 'it'; 
+            // Impedisce all'utente di scrivere mentre l'agente sta scrivendo
             embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
 
-            // 3. GESTIONE EVENTO "PRONTO"
+            // 3. GESTIONE EVENTO 
             window.addEventListener("onEmbeddedMessagingReady", () => {
                 console.log(">>> EVENTO: Messaging Ready. Invio parametri...");
                 
                 try {
                     // Qui usiamo le variabili definite poche righe sopra (Closure corretta)
                     embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-                        "name": userData.firstName,
+                        "fullname": userData.fullname,
                         "userType": userData.userType,
                         "nationality": userData.nationality,
                         "userId": userData.userId
                     });
-                    
+                    //
                     console.log(">>> Parametri Hidden impostati con successo:", userData);
-                    document.getElementById('status-msg').innerText = "Chat Pronta & Parametri Inviati!";
+                    document.getElementById('status-msg').innerText = "Chat Pronta";
                     document.getElementById('status-msg').style.color = "green";
 
                 } catch (e) {
@@ -78,8 +79,8 @@
                 }
             });
 
-            // 4. INIZIALIZZAZIONE (Bootstrap)
-            // Nota: Ho mantenuto gli ID specifici del tuo secondo script (devai2)
+            
+            // ID specifici dell'agente
             embeddedservice_bootstrap.init(
                 '00DUA000003hFV7',
                 'ai_chogangroupspa_com',
