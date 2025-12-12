@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Demo Salesforce - Auto Load</title>
+  <title>Demo Salesforce - Auto Load Fixed</title>
   <style>
     body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #ffffff; margin: 0; }
     .box { background: #fff; padding: 24px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left; width: 350px; }
     h1 { margin: 0 0 20px; font-size: 24px; text-align: center; color: #333; }
     .info-row { margin-bottom: 10px; font-size: 16px; color: #555; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
     .info-row strong { color: #000; display: inline-block; width: 100px; }
+    .status { font-size: 12px; text-align: center; color: #0969da; margin-top: 15px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -17,56 +18,68 @@
   <div class="box">
     <h1>Dati Utente</h1>
     
-    <div class="info-row"><strong>name:</strong> <span id="disp-name"></span></div>
-    <div class="info-row"><strong>userType:</strong> <span id="disp-type"></span></div>
-    <div class="info-row"><strong>nationality:</strong> <span id="disp-nat"></span></div>
-    <div class="info-row"><strong>userId:</strong> <span id="disp-id"></span></div>
+    <div class="info-row"><strong>name:</strong> <span id="disp-name">...</span></div>
+    <div class="info-row"><strong>userType:</strong> <span id="disp-type">...</span></div>
+    <div class="info-row"><strong>nationality:</strong> <span id="disp-nat">...</span></div>
+    <div class="info-row"><strong>userId:</strong> <span id="disp-id">...</span></div>
     
+    <div id="status-msg" class="status">In attesa di inizializzazione...</div>
+
     <p style="text-align:center; color:#999; font-size:12px; margin-top:20px;">
         Chogan
     </p>
   </div>
 
-  <script>
-    // --- Variabili Hardcodate ---
-    const name = "Mario Rossi";
-    const userType = "consultant";
-    const nationality = "IT";
-    const userId = "12345";
-
-    // Mostra i dati a video
-    document.getElementById('disp-name').innerText = name;
-    document.getElementById('disp-type').innerText = userType;
-    document.getElementById('disp-nat').innerText = nationality;
-    document.getElementById('disp-id').innerText = userId;
-  </script>
-
   <script type='text/javascript'>
     function initEmbeddedMessaging() {
-        console.log("--> INIT SALESFORCE <--");
+        console.log("--> INIT SALESFORCE START <--");
+
         try {
-            // Settings Lingua e Input
+            // 1. DEFINIZIONE VARIABILI (Tutto dentro la funzione per sicurezza scope)
+            // Usiamo un oggetto per pulizia, ma puoi usare const separate
+            const userData = {
+                firstName: "Mario Rossi", // Ho cambiato nome var per evitare conflitti con window.name
+                userType: "consultant",
+                nationality: "IT",
+                userId: "12345"
+            };
+
+            // 2. AGGIORNAMENTO INTERFACCIA (Così vediamo cosa stiamo per inviare)
+            document.getElementById('disp-name').innerText = userData.firstName;
+            document.getElementById('disp-type').innerText = userData.userType;
+            document.getElementById('disp-nat').innerText = userData.nationality;
+            document.getElementById('disp-id').innerText = userData.userId;
+
+            // --- IMPOSTAZIONI SALESFORCE ---
             embeddedservice_bootstrap.settings.language = 'it'; 
             embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
 
-            // Quando la chat è pronta (caricata), imposta i campi e basta.
+            // 3. GESTIONE EVENTO "PRONTO"
             window.addEventListener("onEmbeddedMessagingReady", () => {
-                console.log("Messaging Ready: Imposto i campi nascosti...");
+                console.log(">>> EVENTO: Messaging Ready. Invio parametri...");
                 
                 try {
+                    // Qui usiamo le variabili definite poche righe sopra (Closure corretta)
                     embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-                        "name": name,
-                        "userType": userType,
-                        "nationality": nationality,
-                        "userId": userId
+                        "name": userData.firstName,
+                        "userType": userData.userType,
+                        "nationality": userData.nationality,
+                        "userId": userData.userId
                     });
-                    console.log("Parametri Hidden OK:", { name, userType, nationality, userId });
+                    
+                    console.log(">>> Parametri Hidden impostati con successo:", userData);
+                    document.getElementById('status-msg').innerText = "Chat Pronta & Parametri Inviati!";
+                    document.getElementById('status-msg').style.color = "green";
+
                 } catch (e) {
-                    console.error("Errore campi hidden:", e);
+                    console.error("Errore nel settare i campi hidden:", e);
+                    document.getElementById('status-msg').innerText = "Errore Parametri";
+                    document.getElementById('status-msg').style.color = "red";
                 }
             });
 
-            // Init Snippet
+            // 4. INIZIALIZZAZIONE (Bootstrap)
+            // Nota: Ho mantenuto gli ID specifici del tuo secondo script (devai2)
             embeddedservice_bootstrap.init(
                 '00DUA000003hFV7',
                 'ai_chogangroupspa_com',
@@ -77,7 +90,7 @@
             );
 
         } catch (err) {
-            console.error('Errore Init:', err);
+            console.error('Errore critico durante Init:', err);
         }
     };
   </script>
