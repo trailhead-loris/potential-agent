@@ -38,6 +38,7 @@
     <div class="info-row"><strong>Nome:</strong> <span id="disp-name">...</span></div>
     <div class="info-row"><strong>Tipo Utente:</strong> <span id="disp-type">...</span></div>
     <div class="info-row"><strong>ID Utente:</strong> <span id="disp-id">...</span></div>
+    <div class="info-row"><strong>Nazionalità:</strong> <span id="disp-nationality">...</span></div>
     
     <button id="start-btn" class="btn-start" onclick="startChatSession()">Inizializza Chat</button>
 
@@ -61,6 +62,7 @@
     document.getElementById('disp-name').innerText = userData.fullname;
     document.getElementById('disp-type').innerText = userData.userType;
     document.getElementById('disp-id').innerText = userData.userId;
+    document.getElementById('disp-nationality').innerText = userData.nationality;
 
     function startChatSession() {
         // Disabilita il bottone per evitare doppi click
@@ -138,3 +140,4 @@
 </body>
 
 </html>
+
