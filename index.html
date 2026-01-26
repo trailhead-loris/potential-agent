@@ -3,84 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Demo Salesforce - Auto Load Fixed</title>
+  <title>Demo Salesforce - Multi-Language Test</title>
   <style>
-    body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #ffffff; margin: 0; }
-    .box { background: #fff; padding: 24px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left; width: 350px; }
-    h1 { margin: 0 0 20px; font-size: 24px; text-align: center; color: #333; }
-    .info-row { margin-bottom: 10px; font-size: 16px; color: #555; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
-    .info-row strong { color: #000; display: inline-block; width: 100px; }
-    .status { font-size: 12px; text-align: center; color: #0969da; margin-top: 15px; font-weight: bold; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f4f6f9; margin: 0; }
+    .box { background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: left; width: 380px; }
+    h1 { margin: 0 0 25px; font-size: 26px; text-align: center; color: #1a1a1a; }
+    .info-row { margin-bottom: 12px; font-size: 15px; color: #555; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .info-row strong { color: #333; }
+    
+    /* Stile per il selettore e bottone */
+    select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
+    .btn-start { display: block; width: 100%; padding: 12px; background-color: #0070d2; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 20px; transition: background 0.3s; }
+    .btn-start:hover { background-color: #005fb2; }
+    .btn-start:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    .status { font-size: 13px; text-align: center; color: #0969da; margin-top: 15px; font-weight: 600; min-height: 20px;}
   </style>
 </head>
 <body>
 
   <div class="box">
-    <h1>Dati Utente</h1>
+    <h1>Test Agentforce</h1>
     
-    <div class="info-row"><strong>fullname:</strong> <span id="disp-name">...</span></div>
-    <div class="info-row"><strong>userType:</strong> <span id="disp-type">...</span></div>
-    <div class="info-row"><strong>nationality:</strong> <span id="disp-nat">...</span></div>
-    <div class="info-row"><strong>userId:</strong> <span id="disp-id">...</span></div>
-    
-    <div id="status-msg" class="status">In attesa di inizializzazione...</div>
+    <div class="info-row" style="background-color: #fafffa; border: 1px solid #cce5cc; padding: 10px; border-radius: 6px;">
+        <strong>Lingua Chat:</strong>
+        <select id="language-picker">
+            <option value="it">Italiano (IT)</option>
+            <option value="en_US">English (US)</option>
+            <option value="es">Español (ES)</option>
+            <option value="fr">Français (FR)</option>
+        </select>
+    </div>
 
-    <p style="text-align:center; color:#999; font-size:12px; margin-top:20px;">
-        Chogan
+    <div class="info-row"><strong>Nome:</strong> <span id="disp-name">...</span></div>
+    <div class="info-row"><strong>Tipo Utente:</strong> <span id="disp-type">...</span></div>
+    <div class="info-row"><strong>ID Utente:</strong> <span id="disp-id">...</span></div>
+    
+    <button id="start-btn" class="btn-start" onclick="startChatSession()">Inizializza Chat</button>
+
+    <div id="status-msg" class="status">Seleziona lingua e clicca Inizializza</div>
+
+    <p style="text-align:center; color:#999; font-size:11px; margin-top:25px;">
+        Chogan Demo Environment
     </p>
   </div>
 
   <script type='text/javascript'>
-    function initEmbeddedMessaging() {
+    // Dati utente simulati
+    const userData = {
+        fullname: "Mario Rossi", 
+        userType: "consultant",
+        nationality: "IT",
+        userId: "12345"
+    };
+
+    // Popola UI
+    document.getElementById('disp-name').innerText = userData.fullname;
+    document.getElementById('disp-type').innerText = userData.userType;
+    document.getElementById('disp-id').innerText = userData.userId;
+
+    function startChatSession() {
+        // Disabilita il bottone per evitare doppi click
+        const btn = document.getElementById('start-btn');
+        btn.disabled = true;
+        btn.innerText = "Caricamento...";
+        
+        // Recupera la lingua scelta dalla Select
+        const selectedLang = document.getElementById('language-picker').value;
+        console.log("--> LINGUA SELEZIONATA:", selectedLang);
+
+        initEmbeddedMessaging(selectedLang);
+    }
+
+    function initEmbeddedMessaging(langCode) {
         console.log("--> INIT SALESFORCE START <--");
 
         try {
-            // 1. DEFINIZIONE VARIABILI
-            // 
-            const userData = {
-                fullname: "Mario Rossi", 
-                userType: "consultant",
-                nationality: "IT",
-                userId: "12345"
-            };
-
-            // 2. AGGIORNAMENTO INTERFACCIA Per vedere cosa stiamo per inviare all'agente )
-            document.getElementById('disp-name').innerText = userData.fullname;
-            document.getElementById('disp-type').innerText = userData.userType;
-            document.getElementById('disp-nat').innerText = userData.nationality;
-            document.getElementById('disp-id').innerText = userData.userId;
-
-            // --- IMPOSTAZIONI SALESFORCE ---
-            embeddedservice_bootstrap.settings.language = 'it'; 
-            // Impedisce all'utente di scrivere mentre l'agente sta scrivendo
+            // 1. IMPOSTAZIONI DEL CANALE (UI del Widget)
+            // Questo imposta la lingua dei pulsanti standard ("Invia", "Chiudi", ecc.)
+            embeddedservice_bootstrap.settings.language = langCode; 
+            
             embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
 
-            // 3. GESTIONE EVENTO 
+            // 2. GESTIONE EVENTO PRE-CHAT (Per Agentforce)
             window.addEventListener("onEmbeddedMessagingReady", () => {
                 console.log(">>> EVENTO: Messaging Ready. Invio parametri...");
                 
                 try {
-                    // Qui usiamo le variabili definite poche righe sopra (Closure corretta)
-                    embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+                    // Costruiamo l'oggetto con i dati utente + LA LINGUA
+                    const hiddenFields = {
                         "fullname": userData.fullname,
                         "userType": userData.userType,
                         "nationality": userData.nationality,
-                        "userId": userData.userId
-                    });
-                    //
-                    console.log(">>> Parametri Hidden impostati con successo:", userData);
-                    document.getElementById('status-msg').innerText = "Chat Pronta";
+                        "userId": userData.userId,
+                        // ECCO IL PUNTO CRUCIALE DALLA DOCUMENTAZIONE:
+                        // Passiamo la lingua come parametro nascosto per il Flow Omni-Channel
+                        "Language": langCode 
+                    };
+
+                    embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields(hiddenFields);
+
+                    console.log(">>> Parametri Hidden inviati:", hiddenFields);
+                    
+                    document.getElementById('status-msg').innerText = "Chat Pronta in: " + langCode;
                     document.getElementById('status-msg').style.color = "green";
+                    document.getElementById('start-btn').style.display = 'none'; // Nascondi bottone
 
                 } catch (e) {
-                    console.error("Errore nel settare i campi hidden:", e);
+                    console.error("Errore hidden fields:", e);
                     document.getElementById('status-msg').innerText = "Errore Parametri";
                     document.getElementById('status-msg').style.color = "red";
                 }
             });
 
-            
-            // ID specifici dell'agente
+            // 3. INIZIALIZZAZIONE EFFETTIVA
             embeddedservice_bootstrap.init(
                 '00DUA000003hFV7',
                 'ai_chogangroupspa_com',
@@ -92,11 +128,12 @@
 
         } catch (err) {
             console.error('Errore critico durante Init:', err);
+            document.getElementById('status-msg').innerText = "Errore Init";
         }
     };
   </script>
   
-  <script type='text/javascript' src='https://chogangroup--devai2.sandbox.my.site.com/ESWaichogangroupspacom1764335835157/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+  <script type='text/javascript' src='https://chogangroup--devai2.sandbox.my.site.com/ESWaichogangroupspacom1764335835157/assets/js/bootstrap.min.js'></script>
 
 </body>
 </html>
