@@ -1,84 +1,4 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Demo Salesforce - Multi-Language Test</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f4f6f9; margin: 0; }
-    .box { background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: left; width: 380px; }
-    h1 { margin: 0 0 25px; font-size: 26px; text-align: center; color: #1a1a1a; }
-    
-    .input-group { margin-bottom: 15px; }
-    .input-group label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: 600; }
-    
-    /* Stile uniforme per input e select */
-    select, input[type="text"] { 
-        width: 100%; 
-        padding: 8px 10px; 
-        border-radius: 4px; 
-        border: 1px solid #ccc; 
-        font-size: 14px; 
-        box-sizing: border-box; /* Assicura che il padding non sballi la larghezza */
-        font-family: inherit;
-    }
-    
-    .btn-start { display: block; width: 100%; padding: 12px; background-color: #0070d2; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 25px; transition: background 0.3s; }
-    .btn-start:hover { background-color: #005fb2; }
-    .btn-start:disabled { background-color: #ccc; cursor: not-allowed; }
-
-    .status { font-size: 13px; text-align: center; color: #0969da; margin-top: 15px; font-weight: 600; min-height: 20px;}
-    
-    .section-title { font-size: 12px; text-transform: uppercase; color: #999; margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-  </style>
-</head>
-<body>
-
-  <div class="box">
-    <h1>Test Agentforce</h1>
-    
-    <div class="input-group" style="background-color: #fafffa; border: 1px solid #cce5cc; padding: 10px; border-radius: 6px;">
-        <label for="language-picker">Lingua Chat</label>
-        <select id="language-picker">
-            <option value="it">Italiano (IT)</option>
-            <option value="en_US">English (US)</option>
-            <option value="es">Español (ES)</option>
-            <option value="fr">Français (FR)</option>
-        </select>
-    </div>
-
-    <div class="section-title">Dati Utente</div>
-
-    <div class="input-group">
-        <label for="inp-fullname">Nome Completo (fullname)</label>
-        <input type="text" id="inp-fullname" value="Mario Rossi" placeholder="Es. Mario Rossi">
-    </div>
-
-    <div class="input-group">
-        <label for="inp-type">Tipo Utente (userType)</label>
-        <input type="text" id="inp-type" value="consultant" placeholder="Es. consultant">
-    </div>
-
-    <div class="input-group">
-        <label for="inp-id">ID Utente (userId)</label>
-        <input type="text" id="inp-id" value="12345" placeholder="Es. 12345">
-    </div>
-
-    <div class="input-group">
-        <label for="inp-nationality">Nazionalità (nationality)</label>
-        <input type="text" id="inp-nationality" value="IT" placeholder="Es. IT">
-    </div>
-    
-    <button id="start-btn" class="btn-start" onclick="startChatSession()">Inizializza Chat</button>
-
-    <div id="status-msg" class="status">Configura e clicca Inizializza</div>
-
-    <p style="text-align:center; color:#999; font-size:11px; margin-top:25px;">
-        Chogan Demo Environment
-    </p>
-  </div>
-
-  <script type='text/javascript'>
+<script type='text/javascript'>
     
     function startChatSession() {
         // Disabilita il bottone
@@ -108,9 +28,10 @@
 
         try {
             // 1. IMPOSTAZIONI DEL CANALE (UI del Widget)
+            // Usa SOLO embeddedservice_bootstrap, non embedded_svc
             embeddedservice_bootstrap.settings.language = langCode; 
-            embedded_svc.settings.loadingText = "..."
             
+            // Disabilita input utente se si parla col bot (opzionale)
             embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
 
             // 2. GESTIONE EVENTO PRE-CHAT
@@ -124,7 +45,6 @@
                         "userType": userData.userType,
                         "nationality": userData.nationality,
                         "userId": userData.userId,
-                        // Passiamo la lingua selezionata dinamicamente
                         "Language": langCode 
                     };
 
@@ -155,12 +75,7 @@
 
         } catch (err) {
             console.error('Errore critico durante Init:', err);
-            document.getElementById('status-msg').innerText = "Errore Init";
+            document.getElementById('status-msg').innerText = "Errore Init: " + err.message;
         }
     };
   </script>
-  
-  <script type='text/javascript' src='https://chogangroup--devai2.sandbox.my.site.com/ESWaichogangroupspacom1764335835157/assets/js/bootstrap.min.js'></script>
-
-</body>
-</html>
